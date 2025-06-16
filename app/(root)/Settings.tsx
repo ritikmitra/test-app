@@ -1,25 +1,53 @@
-import { View, Text, StyleSheet, Switch, ToastAndroid, Button } from 'react-native';
-import { useState } from 'react';
+import { View, Text, StyleSheet, Switch, Alert } from 'react-native';
+import { useEffect, useState } from 'react';
 import { COLORS } from '@/constants/color';
-import HotspotManager, { Device, TetheringError } from "@react-native-tethering/hotspot"
+import HotspotManager, { TetheringError } from "@react-native-tethering/hotspot"
 
 const Settings = () => {
   const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
-  const [devices, setDevices] = useState<Device[]>([]);
+  const toggleSwitch = async () => {
+    if (!isEnabled) {
+      try {
+        await HotspotManager.setHotspotEnabled(true);
+        setIsEnabled(true);
+        Alert.alert("Hotspot Error", "Hotspot is now enabled");
+      } catch (error) {
+        if (error instanceof TetheringError) {
+          setIsEnabled(false);
+          Alert.alert("Hotspot Turning", error.message);
+        }
+      }
+    } else {
+      try {
+        await HotspotManager.setHotspotEnabled(false);
+        setIsEnabled(false);
+      } catch (error) {
+        if (error instanceof TetheringError) {
+          setIsEnabled(true);
+          Alert.alert("Hotspot Error", error.message);
+        }
+      }
+      Alert.alert("Hotspot Turning", "Hotspot is now disabled");
+    }
 
-  async function onPress(){
+  };
+
+  async function CheckHotspot() {
     try {
       const state = await HotspotManager.isHotspotEnabled();
-      ToastAndroid.show(`Hotspot state: ${state}`, ToastAndroid.SHORT)
+      setIsEnabled(state);
     } catch (error) {
       if (error instanceof TetheringError) {
-        ToastAndroid.show(error.message, ToastAndroid.LONG)
+        Alert.alert("Hotspot Turning", error.message);
       }
-      console.log(error);
     }
   }
+
+  useEffect(() => {
+    CheckHotspot();
+  }, []);
+
 
   return (
     <View style={styles.container}>
@@ -27,7 +55,6 @@ const Settings = () => {
 
       <View style={styles.settingItem}>
         <Text style={styles.settingLabel}>Hotspots and Tethering</Text>
-        <Button title='check' onPress={onPress}/>
         <Switch
           trackColor={{ false: COLORS.background, true: COLORS.primary }}
           thumbColor={isEnabled ? COLORS.white : '#f4f3f4'}
