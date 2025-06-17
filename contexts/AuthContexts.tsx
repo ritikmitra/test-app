@@ -8,6 +8,21 @@ type AuthContextType = {
   refreshToken : string | null;
   login: (accessToken: string, refreshToken: string) => Promise<void>;
   logout: () => Promise<void>;
+  userRole: UserRole | null;
+};
+
+enum UserRole {
+  ADMIN = 'admin',
+  USER = 'user',
+}
+
+type DecodedToken = {
+userId: string;
+    username: string;
+    tokenType: 'access' | 'refresh';
+    iat?: number;
+    exp?: number;
+    role : UserRole;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -16,12 +31,15 @@ const AuthContext = createContext<AuthContextType>({
   refreshToken : null,
   login: async () => {},
   logout: async () => {},
+  userRole: null,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [decodedToken, setDecodedToken] = useState<DecodedToken | null>(null);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
 
   const storeToken = async (key: string, value: string) => {
     if (Platform.OS === 'web') {
@@ -45,12 +63,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const decodeToken = (token: string) => {
+    try {
+      const decoded = JSON.parse(atob(token.split('.')[1]));
+      setDecodedToken(decoded);
+      setUserRole(decoded.role);
+    } catch (error) {
+      console.error('Error decoding token:', error);
+    }
+  };
+
   const login = async (access: string, refresh: string) => {
     await storeToken('accessToken', access);
     await storeToken('refreshToken', refresh);
     setAccessToken(access);
     setRefreshToken(refresh);
     setIsAuthenticated(true);
+    decodeToken(access);
+    setUserRole(decodedToken?.role || null);
   };
 
   const logout = async () => {
@@ -59,6 +89,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setAccessToken(null);
     setRefreshToken(null);
     setIsAuthenticated(false);
+    setDecodedToken(null);
+    setUserRole(null);
   };
 
   const loadTokens = async () => {
@@ -67,6 +99,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setAccessToken(access);
     setRefreshToken(refresh);
     setIsAuthenticated(!!access);
+    if (access) {
+      decodeToken(access);
+    }
   };
 
   useEffect(() => {
@@ -80,7 +115,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         accessToken,
         login,
         logout,
-        refreshToken
+        refreshToken,
+        userRole
       }}
     >
       {children}
