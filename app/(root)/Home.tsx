@@ -2,24 +2,22 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { useAuth } from '@/contexts/AuthContexts';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/color';
+import { Link } from 'expo-router';
 
 const Home = () => {
-  const { logout } = useAuth();
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Welcome to the Dashboard</Text>
-        <TouchableOpacity onPress={logout} style={styles.logoutButton}>
-          <Ionicons name='log-out-outline' size={24} color='white' />
-        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Dashboard</Text>
+        <Link href={"/(screens)/Profile"} style={styles.profileButton}>
+          <Ionicons name='person-outline' size={24} color='white' />
+        </Link>
       </View>
 
       {/* Content */}
@@ -41,7 +39,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-    paddingTop: 30,
   },
   header: {
     flexDirection: 'row',
@@ -57,7 +54,7 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     fontWeight: 'bold',
   },
-  logoutButton: {
+  profileButton: {
     backgroundColor: COLORS.primary,
     padding: 8,
     borderRadius: 100,
