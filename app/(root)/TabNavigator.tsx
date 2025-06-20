@@ -7,6 +7,7 @@ import * as Haptics from 'expo-haptics';
 import { COLORS } from '@/constants/color';
 import { useRef, useEffect } from 'react';
 import Admin from './Admin';
+import { useAuth } from '@/contexts/AuthContexts';
 
 const Tab = createBottomTabNavigator();
 
@@ -14,6 +15,7 @@ const Tab = createBottomTabNavigator();
 const CustomTabButton = ({ children, onPress, accessibilityState }: any) => {
   const scaleValue = useRef(new Animated.Value(1)).current;
   const isSelected = accessibilityState?.selected;
+
 
   useEffect(() => {
     Animated.spring(scaleValue, {
@@ -26,7 +28,7 @@ const CustomTabButton = ({ children, onPress, accessibilityState }: any) => {
 
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
+
     Animated.sequence([
       Animated.spring(scaleValue, {
         toValue: 0.95,
@@ -52,7 +54,7 @@ const CustomTabButton = ({ children, onPress, accessibilityState }: any) => {
       style={styles.customButton}
       accessibilityState={accessibilityState}
     >
-      <Animated.View 
+      <Animated.View
         style={[
           styles.buttonContent,
           { transform: [{ scale: scaleValue }] }
@@ -65,7 +67,8 @@ const CustomTabButton = ({ children, onPress, accessibilityState }: any) => {
 };
 
 const TabNavigator = () => {
-  
+  const { userRole } = useAuth();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -98,7 +101,7 @@ const TabNavigator = () => {
         },
 
         tabBarButton: ({ children, onPress, accessibilityState }) => (
-          <CustomTabButton 
+          <CustomTabButton
             onPress={onPress}
             accessibilityState={accessibilityState}
           >
@@ -108,8 +111,10 @@ const TabNavigator = () => {
       })}
     >
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Settings" component={Settings} /> 
-      <Tab.Screen name="Admin" component={Admin} /> 
+      <Tab.Screen name="Settings" component={Settings} />
+      {
+        userRole === "ADMIN" && <Tab.Screen name="Admin" component={Admin} />
+      }
     </Tab.Navigator>
   );
 };
@@ -125,9 +130,9 @@ const styles = StyleSheet.create({
     elevation: 8,
     shadowColor: '#000',
     shadowOpacity: 0.12,
-    shadowOffset: { 
-      width: 0, 
-      height: 8 
+    shadowOffset: {
+      width: 0,
+      height: 8
     },
     shadowRadius: 20,
     backdropFilter: 'blur(20px)',

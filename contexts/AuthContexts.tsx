@@ -5,33 +5,33 @@ import { Platform } from 'react-native';
 type AuthContextType = {
   isAuthenticated: boolean;
   accessToken: string | null;
-  refreshToken : string | null;
+  refreshToken: string | null;
   login: (accessToken: string, refreshToken: string) => Promise<void>;
   logout: () => Promise<void>;
-  userRole: UserRole | null;
+  userRole: UserRole;
 };
 
-enum UserRole {
-  ADMIN = 'admin',
-  USER = 'user',
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
 }
 
 type DecodedToken = {
-userId: string;
-    username: string;
-    tokenType: 'access' | 'refresh';
-    iat?: number;
-    exp?: number;
-    role : UserRole;
+  userId: string;
+  username: string;
+  tokenType: 'access' | 'refresh';
+  iat?: number;
+  exp?: number;
+  role: UserRole;
 };
 
 const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   accessToken: null,
-  refreshToken : null,
-  login: async () => {},
-  logout: async () => {},
-  userRole: null,
+  refreshToken: null,
+  login: async () => { },
+  logout: async () => { },
+  userRole: UserRole.USER,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [decodedToken, setDecodedToken] = useState<DecodedToken | null>(null);
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [userRole, setUserRole] = useState<UserRole>(UserRole.USER);
 
   const storeToken = async (key: string, value: string) => {
     if (Platform.OS === 'web') {
@@ -80,7 +80,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setRefreshToken(refresh);
     setIsAuthenticated(true);
     decodeToken(access);
-    setUserRole(decodedToken?.role || null);
+    if (decodedToken) {
+      setUserRole(decodedToken.role);
+    }
   };
 
   const logout = async () => {
@@ -90,7 +92,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setRefreshToken(null);
     setIsAuthenticated(false);
     setDecodedToken(null);
-    setUserRole(null);
+    setUserRole(UserRole.USER);
   };
 
   const loadTokens = async () => {
@@ -116,7 +118,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         login,
         logout,
         refreshToken,
-        userRole
+        userRole: userRole || UserRole.USER,
       }}
     >
       {children}

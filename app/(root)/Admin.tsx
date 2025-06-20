@@ -9,10 +9,12 @@ import {
   FlatList,
   TouchableOpacity,
   Modal,
-  Button,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { Users } from '@/constants/types';
+import { apiUrls } from '@/constants/apiUrls';
+import api from '@/services/api';
 
 const PAGE_SIZE = 10;
 
@@ -22,7 +24,7 @@ const Admin = () => {
   const [filtered, setFiltered] = useState(users);
   const [page, setPage] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<Users | null>(null );
+  const [selectedUser, setSelectedUser] = useState<Users>();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
 
@@ -49,14 +51,36 @@ const Admin = () => {
     }
   };
 
-  const openModal = (user : Users) => {
+  const openModal = (user: Users) => {
     setSelectedUser(user);
     setModalVisible(true);
   };
 
-  const sendForm = () => {
+  const sendForm = async () => {
     // replace with your API logic
-    console.log('Send form', { user: selectedUser, title, body });
+    if (!selectedUser || !title || !body) {
+      Alert.alert('Error', 'Please fill in all fields.');
+      return;
+    }
+    const payload = {
+      userId: selectedUser.id,
+      title,
+      body,
+    };
+    try {
+      const response = await api.post(apiUrls.sendnotifacation, payload);
+      if (response.status === 200) {
+        Alert.alert('Success', 'Notification sent successfully.');
+      } else {
+        Alert.alert('Error', 'Failed to send notification.');
+      }
+    } catch (error: any) {
+      console.error('Error sending notification:', error.message);
+      Alert.alert('Error', 'An error occurred while sending the notification.');
+
+    }
+    console.log('Sending payload:', payload);
+
     setModalVisible(false);
     setTitle('');
     setBody('');
@@ -127,7 +151,18 @@ const Admin = () => {
               onChangeText={setBody}
               multiline
             />
-            <Button title="Send" onPress={sendForm} />
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
+                <View style={styles.sendButton}>
+                  <Text>Cancel</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={sendForm}>
+                <View style={styles.sendButton}>
+                  <Text>Send</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -141,7 +176,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f0f4f8',
+    backgroundColor: COLORS.background,
   },
   header: {
     padding: 15,
@@ -167,6 +202,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderColor: '#ddd',
     borderWidth: 1,
+    elevation: 2,
   },
   modalBackdrop: {
     flex: 1,
@@ -175,7 +211,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.card,
     borderRadius: 6,
     padding: 20,
   },
@@ -190,6 +226,17 @@ const styles = StyleSheet.create({
     height: 80,
     textAlignVertical: 'top',
   },
+  sendButton: {
+    backgroundColor: COLORS.textLight,
+    padding: 5,
+    borderRadius: 6,
+    alignItems: 'center',
+    width: 100,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  }
 });
 
 export default Admin;

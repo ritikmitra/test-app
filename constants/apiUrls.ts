@@ -4,4 +4,5 @@ export const apiUrls = {
     refresh: "/refresh",
     profile : "/profile",
     users : "/users",
+    sendnotifacation : "/send-notification",
 }

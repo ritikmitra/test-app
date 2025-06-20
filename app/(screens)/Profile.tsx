@@ -2,7 +2,7 @@ import { COLORS } from '@/constants/color';
 import { useAuth } from '@/contexts/AuthContexts';
 import { useProfiles } from '@/hooks/useProfiles';
 import { Ionicons } from '@expo/vector-icons';
-import { Link, Stack } from 'expo-router';
+import { Link, Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 
@@ -10,9 +10,20 @@ const Profile = () => {
   const { isLoading, profiles, fetchProfiles } = useProfiles();
   const { logout } = useAuth();
 
+  const router = useRouter()
+
   useEffect(() => {
     fetchProfiles();
   }, [fetchProfiles]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.replace("/sign-in");
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -35,11 +46,11 @@ const Profile = () => {
     <Stack.Screen options={{ animation: 'slide_from_left' }} />
     <View style={styles.container}>
       <View style={styles.header}>
-        <Link href="/">
+        <Link href="/sign-in">
           <Ionicons name='arrow-back' size={24} color='black' />
         </Link>
         <Text style={styles.headerTitle}>User Profile</Text>
-        <TouchableOpacity onPress={logout} style={styles.logoutButton}>
+        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
           <Ionicons name='log-out-outline' size={24} color='white' />
         </TouchableOpacity>
       </View>
