@@ -7,14 +7,14 @@ import { useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 
 const Profile = () => {
-  const { isLoading, profiles, fetchProfiles } = useProfiles();
+  const { isLoading,fetchLoggedInProfile,loggedInprofile } = useProfiles();
   const { logout } = useAuth();
 
   const router = useRouter()
 
   useEffect(() => {
-    fetchProfiles();
-  }, [fetchProfiles]);
+    fetchLoggedInProfile();
+  }, [fetchLoggedInProfile]);
 
   const handleLogout = async () => {
     try {
@@ -28,13 +28,13 @@ const Profile = () => {
   if (isLoading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color={COLORS.primary} />
         <Text style={styles.loadingText}>Loading profile...</Text>
       </View>
     );
   }
 
-  if (!profiles) {
+  if (!loggedInprofile) {
     return (
       <View style={styles.centered}>
         <Text style={styles.errorText}>No profile data available.</Text>
@@ -57,13 +57,13 @@ const Profile = () => {
       <View style={styles.card}>
 
         <Text style={styles.label}>Email:</Text>
-        <Text style={styles.value}>{profiles.email || 'N/A'}</Text>
+        <Text style={styles.value}>{loggedInprofile.email || 'N/A'}</Text>
 
         <Text style={styles.label}>Display Name:</Text>
-        <Text style={styles.value}>{profiles.displayName || 'N/A'}</Text>
+        <Text style={styles.value}>{loggedInprofile.displayName || 'N/A'}</Text>
 
         <Text style={styles.label}>Uses Passkey:</Text>
-        <Text style={styles.value}>{profiles.isPasskey ? 'Yes' : 'No'}</Text>
+        <Text style={styles.value}>{loggedInprofile.isPasskey ? 'Yes' : 'No'}</Text>
       </View>
     </View>
   </>

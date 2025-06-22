@@ -8,3 +8,9 @@ export type Users = {
     email: string;
     displayName: string | null;
 }
+
+export type Message = {
+    from: string;
+    message: string;
+    email?: string; 
+}

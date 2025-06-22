@@ -8,6 +8,7 @@ import { COLORS } from '@/constants/color';
 import { useRef, useEffect } from 'react';
 import Admin from './Admin';
 import { useAuth } from '@/contexts/AuthContexts';
+import UserListScreen from './UserList';
 
 const Tab = createBottomTabNavigator();
 
@@ -91,6 +92,7 @@ const TabNavigator = () => {
           if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
           else if (route.name === 'Settings') iconName = focused ? 'settings' : 'settings-outline';
           else if (route.name === 'Admin') iconName = focused ? 'shield-checkmark' : 'shield-checkmark-outline';
+          else if (route.name === 'Chats') iconName = focused ? 'chatbox' : 'chatbox-outline';
 
           return (
             <View style={[styles.iconContainer, focused && styles.activeIconContainer]}>
@@ -110,11 +112,13 @@ const TabNavigator = () => {
         ),
       })}
     >
-      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Home" component={Home}  />
       <Tab.Screen name="Settings" component={Settings} />
       {
         userRole === "ADMIN" && <Tab.Screen name="Admin" component={Admin} />
       }
+      <Tab.Screen name='Chats' component={UserListScreen}/>
+
     </Tab.Navigator>
   );
 };
