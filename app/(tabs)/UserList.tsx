@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   userItem: {
-    paddingVertical: 14,
+    paddingVertical: 16,
     paddingHorizontal: 16,
     backgroundColor: '#fff',
     borderRadius: 8,

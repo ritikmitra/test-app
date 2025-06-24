@@ -5,7 +5,7 @@ const AuthRoutesLayout = () => {
     const { isAuthenticated } = useAuth()
 
     if (isAuthenticated) {
-        return <Redirect href={'./'} />
+        return <Redirect href={'/'} />
     }
     return <Slot />
 }

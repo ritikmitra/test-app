@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/color';
 import { Link } from 'expo-router';
 
-const Home = () => {
+const index = () => {
 
   return (
     <View style={styles.container}>
@@ -33,7 +33,7 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default index;
 
 const styles = StyleSheet.create({
   container: {

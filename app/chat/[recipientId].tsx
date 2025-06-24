@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
     View,
     Text,
@@ -31,28 +31,36 @@ export default function ChatScreen() {
     const router = useRouter();
 
     useEffect(() => {
-        fetchLoggedInProfile();
-        fetchProfileById(recipientId as string);
-    }, []);
+        const initProfiles = async () => {
+            await fetchLoggedInProfile();
+            if (recipientId) {
+                await fetchProfileById(recipientId as string);
+            }
+        };
+        initProfiles();
+    }, [recipientId]);
 
     useEffect(() => {
-        if (!loggedInprofile?.id) return;
+        if (!loggedInprofile?.id || !profile?.email) return;
 
         setUserId(loggedInprofile.id);
-        socket.connect();
 
-        socket.on('connect', () => {
-            socket.emit('join', loggedInprofile.id);
-        });
+        if (!socket.connected) {
+            socket.connect();
+        }
 
-        socket.on('receive-message', ({ from, message }) => {
+        const handleReceiveMessage = ({ from, message }: Message) => {
             setMessages((prev) => [...prev, { from, message, email: profile.email }]);
-        });
+        };
+
+        socket.emit('join', loggedInprofile.id);
+        socket.on('receive-message', handleReceiveMessage);
 
         return () => {
+            socket.off('receive-message', handleReceiveMessage);
             socket.disconnect();
         };
-    }, [loggedInprofile.id, profile.email]);
+    }, [loggedInprofile?.id, profile?.email]);
 
     const sendMessage = () => {
         if (message.trim() === '') return;
@@ -85,11 +93,11 @@ export default function ChatScreen() {
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.container}>
                     <View style={{
-                        flex:1,
+                        flex: 1,
                         flexDirection: 'row',
                         justifyContent: 'space-between',
                     }}>
-                        <Ionicons name='arrow-back' size={25} onPress={() => {router.back()}} color={COLORS.primary} />
+                        <Ionicons name='arrow-back' size={25} onPress={() => { router.push("/(tabs)/UserList") }} color={COLORS.primary} />
                         <Text style={styles.header}>{profile.email}</Text>
                     </View>
 
