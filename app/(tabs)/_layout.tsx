@@ -16,13 +16,16 @@ export default function Layout() {
                 options={{
                     title: "Home",
                     headerShown: false, // Hide the default header
+                    animation : 'shift',
                 }}
+                
             />
-           <Tabs.Screen
-                name="Admin"
+            <Tabs.Screen
+                name="UserList"
                 options={{
-                    title: "Admin",
+                    title: "Friends",
                     headerShown: false, // Hide the default header
+                    animation : 'shift',
                 }}
             />
             <Tabs.Screen
@@ -30,13 +33,7 @@ export default function Layout() {
                 options={{
                     title: "Settings",
                     headerShown: false, // Hide the default header
-                }}
-            />
-            <Tabs.Screen
-                name="UserList"
-                options={{
-                    title: "UserList",
-                    headerShown: false, // Hide the default header
+                    animation : 'shift',
                 }}
             />
         </Tabs>

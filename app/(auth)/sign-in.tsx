@@ -91,7 +91,7 @@ export default function Page() {
 
   return (
     <KeyboardAwareScrollView
-      style={{ flex: 1, paddingLeft: 10, paddingRight: 10 }}
+      style={{ flex: 1 }}
       contentContainerStyle={{ flexGrow: 1 }}
       enableOnAndroid
       enableAutomaticScroll

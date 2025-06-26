@@ -1,14 +1,14 @@
 import { COLORS } from '@/constants/color';
 import { useAuth } from '@/contexts/AuthContexts';
 import { useProfiles } from '@/hooks/useProfiles';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Link, Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 
 const Profile = () => {
-  const { isLoading,fetchLoggedInProfile,loggedInprofile } = useProfiles();
-  const { logout } = useAuth();
+  const { isLoading, fetchLoggedInProfile, loggedInprofile } = useProfiles();
+  const { logout, userRole } = useAuth();
 
   const router = useRouter()
 
@@ -43,16 +43,28 @@ const Profile = () => {
   }
 
   return (<>
-    <Stack.Screen options={{ animation: 'slide_from_left' }} />
+    <Stack.Screen options={{ animation: 'slide_from_right' }} />
     <View style={styles.container}>
       <View style={styles.header}>
         <Link href="/sign-in">
           <Ionicons name='arrow-back' size={24} color='black' />
         </Link>
         <Text style={styles.headerTitle}>User Profile</Text>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Ionicons name='log-out-outline' size={24} color='white' />
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          {
+            userRole === 'ADMIN' && (
+              <TouchableOpacity
+                onPress={() => router.push('/(screens)/Admin')}
+                style={{ padding: 8, borderRadius: 100, backgroundColor: COLORS.primary }}
+              >
+                <MaterialIcons name='admin-panel-settings' size={24} color='white' />
+              </TouchableOpacity>
+            )
+          }
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+            <Ionicons name='log-out-outline' size={24} color='white' />
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.card}>
 
@@ -109,6 +121,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0f4f8',
+    gap: 12,
+    padding: 0,
   },
   title: {
     fontSize: 26,

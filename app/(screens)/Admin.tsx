@@ -143,12 +143,14 @@ const Admin = () => {
               placeholder="Title"
               value={title}
               onChangeText={setTitle}
+              placeholderTextColor={"#ccc"}
             />
             <TextInput
               style={[styles.input, styles.textArea]}
               placeholder="Body"
               value={body}
               onChangeText={setBody}
+              placeholderTextColor={"#ccc"}
               multiline
             />
             <View style={styles.buttonContainer}>

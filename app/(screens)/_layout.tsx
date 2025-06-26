@@ -6,7 +6,7 @@ export default function Layout() {
     <Stack
       screenOptions={{
         headerShown: false, 
-        animation: 'slide_from_left', // You can change this to 'fade', 'slide_from_bottom', etc.
+        animation: 'slide_from_right', // You can change this to 'fade', 'slide_from_bottom', etc.
       }}
     />
   );

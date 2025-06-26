@@ -1,12 +1,15 @@
 import SafeScreen from "@/components/SafeScreen";
 import { AuthProvider } from "@/contexts/AuthContexts";
-import { Slot } from "expo-router";
+import { Stack } from "expo-router";
 
 export default function RootLayout() {
   return (
     <SafeScreen>
       <AuthProvider>
-        <Slot />
+        <Stack screenOptions={{
+          headerShown: false,
+          animation: "ios_from_right"
+        }} />
       </AuthProvider>
     </SafeScreen>
   );

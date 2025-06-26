@@ -29,7 +29,7 @@ export default function UserListScreen() {
       style={styles.userItem}
       onPress={() => handleUserPress(item.id)}
     >
-      <Text style={styles.userEmail}>{item.email}</Text>
+      <Text style={styles.userEmail}>{item.displayName || item.email}</Text>
     </TouchableOpacity>
   );
 
@@ -44,7 +44,9 @@ export default function UserListScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Select a user to chat with</Text>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Friends</Text>
+      </View>
       <FlatList
         data={users}
         keyExtractor={(item) => item.id}
@@ -59,18 +61,28 @@ export default function UserListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
-    paddingTop: 20,
-    paddingHorizontal: 16,
+    backgroundColor: '#f5f5f5',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 16,
-    color: '#222',
+  header: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingTop: 20,
+    justifyContent: 'space-between',
+    padding: 15,
+    backgroundColor: COLORS.background,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  headerTitle: {
+    fontSize: 22,
+    color: COLORS.text,
+    fontWeight: 'bold',
   },
   listContainer: {
+    flexGrow: 1,
+    paddingTop: 10,
     paddingBottom: 20,
+    paddingHorizontal: 10,
   },
   userItem: {
     paddingVertical: 16,

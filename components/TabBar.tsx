@@ -3,7 +3,7 @@ import TabBarButton from './TabBarButton';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { COLORS } from '@/constants/color';
 import { BlurView } from 'expo-blur';
-
+import * as Haptics from 'expo-haptics';
 const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
 
 
@@ -32,8 +32,9 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
                         target: route.key,
                         canPreventDefault: true,
                     });
-
+                    
                     if (!isFocused && !event.defaultPrevented) {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
                         navigation.navigate(route.name, route.params);
                     }
                 };

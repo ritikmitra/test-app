@@ -88,17 +88,13 @@ export default function ChatScreen() {
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0} // adjust for header height if needed
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 25} // adjust for header height if needed
         >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.container}>
-                    <View style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                    }}>
-                        <Ionicons name='arrow-back' size={25} onPress={() => { router.push("/(tabs)/UserList") }} color={COLORS.primary} />
-                        <Text style={styles.header}>{profile.email}</Text>
+                    <View style={styles.header} >
+                        <Ionicons name='arrow-back' size={25} onPress={() => { router.back() }} color={COLORS.primary} />
+                        <Text style={styles.headerText}>{profile.email}</Text>
                     </View>
 
                     <FlatList
@@ -131,20 +127,27 @@ export default function ChatScreen() {
                     </View>
                 </View>
             </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingView >
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 10,
-        paddingBottom: 10,
         backgroundColor: '#fff',
     },
     header: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        height: 10,
+        backgroundColor: COLORS.background,
+        maxHeight: 50,
+        paddingHorizontal: 10
+    },
+    headerText: {
         fontSize: 16,
-        marginVertical: 10,
     },
     messageList: {
         flexGrow: 1,
@@ -157,6 +160,7 @@ const styles = StyleSheet.create({
         gap: 10,
         borderColor: '#ddd',
         borderRadius: 8,
+        margin: 5,
     },
     input: {
         flex: 1,
