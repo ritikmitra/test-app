@@ -1,4 +1,4 @@
-import { Redirect, Slot } from 'expo-router'
+import { Redirect, Stack } from 'expo-router'
 import { useAuth } from '@/contexts/AuthContexts'
 
 const AuthRoutesLayout = () => {
@@ -7,7 +7,7 @@ const AuthRoutesLayout = () => {
     if (isAuthenticated) {
         return <Redirect href={'/'} />
     }
-    return <Slot />
+    return <Stack screenOptions={{ headerShown: false, animation: 'fade_from_bottom' }} />
 }
 
 export default AuthRoutesLayout

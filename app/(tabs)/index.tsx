@@ -171,15 +171,15 @@ const styles = StyleSheet.create({
   },
   tab: {
     padding: 10,
-    borderRadius: 5,
-    backgroundColor: '#ddd',
+    borderRadius: 20,
+    backgroundColor: COLORS.textLight,
   },
   activeTab: {
     backgroundColor: COLORS.primary,
   },
   tabText: {
     fontSize: 16,
-    color: '#333',
+    color: '#fff',
   },
   card: {
     backgroundColor: '#fff',
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     paddingBottom: 60,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
   },
   cardTitle: {
     fontSize: 18,

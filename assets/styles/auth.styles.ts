@@ -10,10 +10,9 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   illustration: {
-    height: 310,
+    height: 250,
     width: 300,
     resizeMode: "contain",
-    
   },
   title: {
     fontSize: 32,
@@ -23,13 +22,43 @@ export const styles = StyleSheet.create({
     textAlign: "center",
   },
   loader: {
-    marginVertical: 20, 
+    marginVertical: 20,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 16,
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: COLORS.white,
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderColor: COLORS.border,
   },
   input: {
     backgroundColor: COLORS.white,
     borderRadius: 12,
     padding: 15,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    fontSize: 16,
+    color: COLORS.text,
+  },
+  passwordInput: {
+    flex: 1,
+
+    fontSize: 16,
+    color: COLORS.text,
+    position: "relative",
+  },
+  InputNames: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+    borderRadius: 12,
+    padding: 15,
     borderWidth: 1,
     borderColor: COLORS.border,
     fontSize: 16,

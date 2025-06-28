@@ -11,6 +11,7 @@ import { useRouter } from 'expo-router';
 import { useAdmin } from '@/hooks/useAdmin';
 import { Users } from '@/constants/types';
 import { COLORS } from '@/constants/color';
+import { Image } from 'expo-image';
 
 export default function UserListScreen() {
   const { users, isLoading, fetchUsers } = useAdmin();
@@ -24,11 +25,18 @@ export default function UserListScreen() {
     router.push(`/chat/${userId}`);
   };
 
+  const generateRandomImage = (displayName: string) => {
+    const names = displayName.split(' ');
+
+    return `https://ui-avatars.com/api/?name=${names[0]}+${names[1]}&background=random&color=ffff&rounded=true`;
+  }
+
   const renderItem = ({ item }: { item: Users }) => (
     <TouchableOpacity
       style={styles.userItem}
       onPress={() => handleUserPress(item.id)}
     >
+      <Image source={{ uri: generateRandomImage(item.displayName!) }} style={styles.userImage} />
       <Text style={styles.userEmail}>{item.displayName || item.email}</Text>
     </TouchableOpacity>
   );
@@ -84,7 +92,18 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingHorizontal: 10,
   },
+  userImage:{
+    width: 50,
+    height: 50,
+    padding: 5,
+    borderWidth : 1,
+    borderColor: '#ddd',
+    borderRadius: 50,
+  },
   userItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
     paddingVertical: 16,
     paddingHorizontal: 16,
     backgroundColor: '#fff',

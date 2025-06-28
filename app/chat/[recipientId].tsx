@@ -94,7 +94,7 @@ export default function ChatScreen() {
                 <View style={styles.container}>
                     <View style={styles.header} >
                         <Ionicons name='arrow-back' size={25} onPress={() => { router.back() }} color={COLORS.primary} />
-                        <Text style={styles.headerText}>{profile.email}</Text>
+                        <Text style={styles.headerText}>{profile.displayName || profile.email}</Text>
                     </View>
 
                     <FlatList

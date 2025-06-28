@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { styles } from "@/assets/styles/auth.styles"
 import { Image } from 'expo-image';
@@ -15,8 +15,11 @@ export default function Page() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false)
+  const [showPassword, setshowPassword] = useState(false);
   const [isBiometricAvailable, setIsBiometricAvailable] = useState(false);
   const [hasHardwareAsync, setHasHardwareAsync] = useState(false);
   const [biometryType, setBiometryType] = useState<LocalAuthentication.AuthenticationType>();
@@ -80,6 +83,11 @@ export default function Page() {
 
   const onSignUpPress = async () => {
 
+    if (!firstName || !lastName) {
+      setError("First name and last name are required");
+      return;
+    }
+
     if (!email || !password) {
       setError("Email and password are required");
       return;
@@ -99,14 +107,14 @@ export default function Page() {
 
     console.log('Register:', email, password);
     const { data } = await Notifications.getDevicePushTokenAsync()
-    // console.log(typeof data);
-
     try {
       const response = await api.post(apiUrls.register,
         {
-          username: email,
+          username: email.trim().toLowerCase(),
           password,
-          deviceToken: data
+          deviceToken: data,
+          firstName,
+          lastName
         }
       );
       const body = await response.data;
@@ -159,69 +167,105 @@ export default function Page() {
       trigger: null,
     });
   }
-
+  const togglePasswordVisibility = () => {
+    setshowPassword(prev => !prev);
+    // setTimeout(() => {
+    //   passwordInputRef.current?.focus();
+    // }, 0); // small delay to allow state to update
+  };
   return (
-    <KeyboardAwareScrollView
-      style={{ flex: 1, paddingLeft: 10, paddingRight: 10 }}
-      contentContainerStyle={{ flexGrow: 1 }}
-      enableOnAndroid
-      enableAutomaticScroll
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} 
     >
-      <View style={styles.container}>
-        <Image source={require("@/assets/images/revenue-i2.png")} style={styles.illustration} />
 
-        <Text style={styles.title}>Create Account</Text>
+      <KeyboardAwareScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        enableOnAndroid
+        enableAutomaticScroll
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.container}>
+          <Image source={require("@/assets/images/revenue-i2.png")} style={styles.illustration} />
 
-        {error ? (
-          <View style={styles.errorBox}>
-            <Ionicons name="alert-circle" size={20} color={COLORS.expense} />
-            <Text style={styles.errorText}> {error}</Text>
-            <TouchableOpacity onPress={() => setError("")}>
-              <Ionicons name="close" size={20} color={COLORS.textLight} />
+          <Text style={styles.title}>Create Account</Text>
+
+          {error ? (
+            <View style={styles.errorBox}>
+              <Ionicons name="alert-circle" size={20} color={COLORS.expense} />
+              <Text style={styles.errorText}> {error}</Text>
+              <TouchableOpacity onPress={() => setError("")}>
+                <Ionicons name="close" size={20} color={COLORS.textLight} />
+              </TouchableOpacity>
+            </View>
+          ) : null}
+
+          <View style={{ flexDirection: "row", gap: 10, marginBottom: 16, justifyContent: "space-between" }}>
+            <TextInput style={[styles.InputNames, error && styles.errorInput]}
+              placeholder='First Name'
+              onFocus={() => setError("")}
+              value={firstName}
+              onChangeText={(firstName) => setFirstName(firstName)}
+              placeholderTextColor="#9A8478"
+              autoCapitalize='words'
+            />
+            <TextInput style={[styles.InputNames, error && styles.errorInput]}
+              placeholder='Last Name'
+              onFocus={() => setError("")}
+              autoCapitalize='words'
+              value={lastName}
+              onChangeText={(lastName) => setLastName(lastName)}
+              placeholderTextColor="#9A8478" />
+          </View>
+
+
+
+          <TextInput
+            placeholder="Email"
+            autoCapitalize="none"
+            style={[styles.input, error && styles.errorInput]}
+            value={email}
+            placeholderTextColor="#9A8478"
+            onFocus={() => setError("")}
+            onChangeText={(email) => setEmail(email)} />
+
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder="Enter Password"
+              secureTextEntry={showPassword}
+              style={[styles.passwordInput, error && styles.errorInput]}
+              value={password}
+              onFocus={() => setError("")}
+              placeholderTextColor="#9A8478"
+              onChangeText={(password) => setPassword(password)} />
+            <TouchableOpacity onPress={togglePasswordVisibility}>
+              <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={24} color={COLORS.textLight} />
             </TouchableOpacity>
           </View>
-        ) : null}
+          {/* Loader is shown when loading is true */}
+          {loading ? (
+            <ActivityIndicator size="large" color={COLORS.primary} style={styles.loader} />
+          ) : (
+            <TouchableOpacity style={styles.button} onPress={onSignUpPress}>
+              <Text style={styles.buttonText}>Sign Up</Text>
+            </TouchableOpacity>
+          )}
 
-
-        <TextInput
-          placeholder="Email"
-          autoCapitalize="none"
-          style={[styles.input, error && styles.errorInput]}
-          value={email}
-          placeholderTextColor="#9A8478"
-          onFocus={() => setError("")}
-          onChangeText={(email) => setEmail(email)} />
-
-        <TextInput
-          placeholder="Enter Password"
-          secureTextEntry={true}
-          style={[styles.input, error && styles.errorInput]}
-          value={password}
-          onFocus={() => setError("")}
-          placeholderTextColor="#9A8478"
-          onChangeText={(password) => setPassword(password)} />
-
-        {/* Loader is shown when loading is true */}
-        {loading ? (
-          <ActivityIndicator size="large" color={COLORS.primary} style={styles.loader} />
-        ) : (
-          <TouchableOpacity style={styles.button} onPress={onSignUpPress}>
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </TouchableOpacity>
-        )}
-
-        {/* <TouchableOpacity style={styles.button} onPress={authenticate}>
+          {/* <TouchableOpacity style={styles.button} onPress={authenticate}>
           <Text style={styles.buttonText}>Authenticate Using Biometrics</Text>
-        </TouchableOpacity> */}
+          </TouchableOpacity> */}
 
-        <View style={styles.footerContainer}>
-          <Text style={styles.footerText} >Already have a account?</Text>
-          <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace("/sign-in")}>
-            <Text style={styles.linkText}>Sign In</Text>
-          </TouchableOpacity>
+          <View style={styles.footerContainer}>
+            <Text style={styles.footerText} >Already have a account?</Text>
+            <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace("/sign-in")}>
+              <Text style={styles.linkText}>Sign In</Text>
+            </TouchableOpacity>
+          </View>
+
         </View>
-
-      </View>
-    </KeyboardAwareScrollView>
+      </KeyboardAwareScrollView>
+    </KeyboardAvoidingView>
   );
 }
