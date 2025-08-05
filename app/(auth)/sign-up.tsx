@@ -10,6 +10,7 @@ import * as Notifications from "expo-notifications"
 import * as LocalAuthentication from 'expo-local-authentication';
 import api from '@/services/api';
 import { apiUrls } from '@/constants/apiUrls';
+import { GoogleSigninButton, GoogleSignin, isSuccessResponse, isErrorWithCode, statusCodes } from '@react-native-google-signin/google-signin';
 
 export default function Page() {
   const router = useRouter();
@@ -38,6 +39,51 @@ export default function Page() {
       }
     })();
   }, []);
+
+  const handleGoogleSignin = async () => {
+
+    try {
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn()
+      if (isSuccessResponse(response)) {
+        const { idToken, user } = response.data;
+        const { email, name, photo } = user;
+
+        const responseBackend = await api.post(apiUrls.register, {
+          username: email,
+          password: "R123456789k@",
+          deviceToken: idToken
+        })
+        console.log(responseBackend);
+
+      } else {
+        Alert.alert("Sign In", "Google SignIn was cancelled");
+      }
+    } catch (error) {
+      if (isErrorWithCode(error)) {
+        switch (error.code) {
+          case statusCodes.IN_PROGRESS:
+            Alert.alert("Sign In", "Sign In is already in progress");
+            break;
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            Alert.alert("Sign In", "Google Play Services are not available");
+            break;
+          case statusCodes.SIGN_IN_CANCELLED:
+            Alert.alert("Sign In", "Sign In was cancelled by the user");
+            break;
+          case statusCodes.SIGN_IN_REQUIRED:
+            Alert.alert("Sign In", "Sign In is required");
+            break;
+          default:
+            Alert.alert("Sign In", `${error.message}`);
+            break;
+        }
+      }
+    }
+
+  }
+
+
 
   const authenticate = async () => {
     const result = await LocalAuthentication.authenticateAsync({
@@ -176,7 +222,7 @@ export default function Page() {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} 
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
 
       <KeyboardAwareScrollView
@@ -254,8 +300,16 @@ export default function Page() {
           )}
 
           {/* <TouchableOpacity style={styles.button} onPress={authenticate}>
-          <Text style={styles.buttonText}>Authenticate Using Biometrics</Text>
+          <Text style={styles.buttonText}>Authent
+          icate Using Biometrics</Text>
           </TouchableOpacity> */}
+
+
+          <GoogleSigninButton
+            size={GoogleSigninButton.Size.Wide}
+            onPress={handleGoogleSignin}
+            color={GoogleSigninButton.Color.Dark}
+          />
 
           <View style={styles.footerContainer}>
             <Text style={styles.footerText} >Already have a account?</Text>

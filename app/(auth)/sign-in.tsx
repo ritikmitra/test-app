@@ -89,6 +89,8 @@ export default function Page() {
 
   };
 
+
+
   return (
     <KeyboardAwareScrollView
       style={{ flex: 1 }}
@@ -132,6 +134,7 @@ export default function Page() {
             <Text style={styles.buttonText}>Sign In</Text>
           </TouchableOpacity>)
         }
+
 
         <View style={styles.footerContainer}>
           <Text style={styles.footerText} >Don&apos;t have an account?</Text>
